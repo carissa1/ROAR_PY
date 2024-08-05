@@ -19,6 +19,7 @@ async def main():
     print("Map Name", carla_world.map_name)
     comprehensive_waypoints = roar_py_instance.world.comprehensive_waypoints
     spawn_points = roar_py_instance.world.spawn_points
+    section_indeces = [198, 438, 547, 691, 803, 884, 1287, 1508, 1854, 1968, 2264, 2592, 2770]
     roar_py_instance.close()
     
     with plt.ion():
@@ -49,6 +50,18 @@ async def main():
                     plt.plot(rep_line[:,0], rep_line[:,1], label="Lane {}".format(lane_id), color='r')
                 else:
                     plt.plot(rep_line[:,0], rep_line[:,1], label="Lane {}".format(lane_id), color='b')
+        for indx in section_indeces:
+            rep_line = comprehensive_waypoints[indx].line_representation
+            rep_line = np.asarray(rep_line)
+            waypoint_heading = tr3d.euler.euler2mat(*comprehensive_waypoints[indx].roll_pitch_yaw) @ np.array([1,0,0])
+            plt.arrow(
+                comprehensive_waypoints[indx].location[0], 
+                comprehensive_waypoints[indx].location[1], 
+                waypoint_heading[0] * 50, 
+                waypoint_heading[1] * 50, 
+                width=10, 
+                color='r'
+            )
         
     plt.show()
 

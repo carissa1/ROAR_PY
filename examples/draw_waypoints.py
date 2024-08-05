@@ -431,6 +431,7 @@ async def main():
     startInd_8 = 1800
     endInd_8 = 2006
     startInd_12 = 2586
+    
     waypoints = roar_py_instance.world.maneuverable_waypoints
     waypoints = waypoints[:startInd_8] + SEC_8_WAYPOINTS \
                 + waypoints[endInd_8:startInd_12] \

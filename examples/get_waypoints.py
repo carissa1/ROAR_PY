@@ -416,109 +416,28 @@ SEC_12_WAYPOINTS = [
   new_x_y(-280.5381774902344, 389.0247802734375),
   new_x_y(-281.29998779296875, 391.6999816894531),
   new_x_y(-282.1494140625, 393.758056640625)
-]
+]    
 
-async def main():
-    carla_client = carla.Client('localhost', 2000)
-    carla_client.set_timeout(15.0)
-    roar_py_instance = roar_py_carla.RoarPyCarlaInstance(carla_client)
-    
-    carla_world = roar_py_instance.world
-    carla_world.set_asynchronous(True)
-    carla_world.set_control_steps(0.00, 0.005)
-    
-    startInd_8 = 1800
-    endInd_8 = 2006
-    startInd_12 = 2586
+startInd_8 = 1800
+endInd_8 = 2006
+startInd_12 = 2586
 
-    print("Map Name", carla_world.map_name)
-    waypoints = roar_py_instance.world.maneuverable_waypoints
-    all_waypoints = waypoints[:startInd_8] + SEC_8_WAYPOINTS \
-                    + waypoints[endInd_8:startInd_12] + SEC_12_WAYPOINTS
-    orig_waypoints = waypoints[:startInd_8] + waypoints[endInd_8:startInd_12]
-    mark_waypoints = SEC_8_WAYPOINTS + SEC_12_WAYPOINTS
-    spawn_points = roar_py_instance.world.spawn_points
-    section_indeces = [198, 438, 547, 691, 803, 884, 1287, 1508, 1854, 1968, 2264, 2592, 2770]
+carla_client = carla.Client('localhost', 2000)
+carla_client.set_timeout(15.0)
+roar_py_instance = roar_py_carla.RoarPyCarlaInstance(carla_client)
 
-    roar_py_instance.close()
-    
-    with plt.ion():
-        for waypoint in (orig_waypoints[:] if orig_waypoints is not None else []):
-            rep_line = waypoint.line_representation
-            rep_line = np.asarray(rep_line)
-            plt.plot(rep_line[:,0], rep_line[:,1])
-            waypoint_heading = tr3d.euler.euler2mat(*waypoint.roll_pitch_yaw) @ np.array([1,0,0])
-            plt.arrow(
-                waypoint.location[0], 
-                waypoint.location[1], 
-                waypoint_heading[0] * 1, 
-                waypoint_heading[1] * 1, 
-                width=0.5, 
-                color='r'
-            )
-        for waypoint in (mark_waypoints[:] if mark_waypoints is not None else []):
-            rep_line = waypoint.line_representation
-            rep_line = np.asarray(rep_line)
-            plt.plot(rep_line[:,0], rep_line[:,1])
-            waypoint_heading = tr3d.euler.euler2mat(*waypoint.roll_pitch_yaw) @ np.array([1,0,0])
-            plt.arrow(
-                waypoint.location[0], 
-                waypoint.location[1], 
-                waypoint_heading[0] * 1, 
-                waypoint_heading[1] * 1, 
-                width=0.5, 
-                color='b'
-            )
-        for spawn_point in spawn_points:
-            spawn_point_heading = tr3d.euler.euler2mat(0,0,spawn_point[1][2]) @ np.array([1,0,0])
-            plt.plot(rep_line[:,0], rep_line[:,1], 'ro')
-        for indx in section_indeces:
-            rep_line = all_waypoints[indx].line_representation
-            rep_line = np.asarray(rep_line)
-            waypoint_heading = tr3d.euler.euler2mat(*all_waypoints[indx].roll_pitch_yaw) @ np.array([1,0,0])
-            plt.plot(rep_line[:,0], rep_line[:,1], 'bo')
-    plt.show()
+carla_world = roar_py_instance.world
+carla_world.set_asynchronous(True)
+carla_world.set_control_steps(0.00, 0.005)
 
-if __name__ == '__main__':
-    asyncio.run(main())
+waypoints = roar_py_instance.world.maneuverable_waypoints
+waypoints = waypoints[:startInd_8] + SEC_8_WAYPOINTS \
+            + waypoints[endInd_8:startInd_12] \
+            + SEC_12_WAYPOINTS
 
-# async def main():
-#     carla_client = carla.Client('localhost', 2000)
-#     carla_client.set_timeout(15.0)
-#     roar_py_instance = roar_py_carla.RoarPyCarlaInstance(carla_client)
-    
-#     carla_world = roar_py_instance.world
-#     carla_world.set_asynchronous(True)
-#     carla_world.set_control_steps(0.00, 0.005)
-    
-#     print("Map Name", carla_world.map_name)
-#     waypoints = roar_py_instance.world.maneuverable_waypoints
-#     spawn_points = roar_py_instance.world.spawn_points
-#     roar_py_instance.close()
-    
-    # with plt.ion():
-    #     for waypoint in (waypoints[:] if waypoints is not None else []):
-    #         rep_line = waypoint.line_representation
-    #         rep_line = np.asarray(rep_line)
-    #         waypoint_heading = tr3d.euler.euler2mat(*waypoint.roll_pitch_yaw) @ np.array([1,0,0])
-    #         plt.arrow(
-    #             waypoint.location[0], 
-    #             waypoint.location[1], 
-    #             waypoint_heading[0] * 1, 
-    #             waypoint_heading[1] * 1, 
-    #             width=0.5, 
-    #             color='r'
-    #         )
-    #         plt.plot(rep_line[:,0], rep_line[:,1])
-    #         plt.pause(0.0001)
-    #     for spawn_point in spawn_points:
-    #         spawn_point_heading = tr3d.euler.euler2mat(0,0,spawn_point[1][2]) @ np.array([1,0,0])
-    #         plt.arrow(
-    #             spawn_point[0][0], 
-    #             spawn_point[0][1], 
-    #             spawn_point_heading[0] * 20, 
-    #             spawn_point_heading[1] * 20, 
-    #             width=20, 
-    #             color='r'
-    #         )
-    # plt.show()
+f = open('waypoints.txt', 'w')
+for w in waypoints:
+    f.write(str(w))
+    f.write('\n')
+
+roar_py_instance.close()

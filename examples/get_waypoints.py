@@ -434,10 +434,30 @@ waypoints = roar_py_instance.world.maneuverable_waypoints
 waypoints = waypoints[:startInd_8] + SEC_8_WAYPOINTS \
             + waypoints[endInd_8:startInd_12] \
             + SEC_12_WAYPOINTS
+# waypoints = SEC_8_WAYPOINTS + SEC_12_WAYPOINTS
 
 f = open('waypoints.txt', 'w')
 for w in waypoints:
-    f.write(str(w))
+    # f.write('(')
+    f.write(str(w.location[0]))
+    f.write(', ')
+    f.write(str(w.location[1]))
     f.write('\n')
+
+# f = open('section.txt')
+# f2 = open('waypoints2.txt', 'w')
+# for line in f.readlines():
+#     # print(line)
+#     # line = line[8:]
+#     # print(line)
+#     line = line[1:]
+#     line = line[:(len(line)-2)]
+#     coords = line.split(',')
+#     # print(coords)
+#     # coords[1].pop()
+#     f2.write(coords[0])
+#     f2.write(', ')
+#     f2.write(coords[1])
+#     f2.write('\n')
 
 roar_py_instance.close()
